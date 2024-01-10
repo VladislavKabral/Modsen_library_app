@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="add-tag-1.0.0" author="Vladislav Kabral">
+        <tagDatabase tag="v1.0.0"/>
+    </changeSet>
+
+    <include file="create-author-genre-book-schema.xml" relativeToChangelogFile="true"/>
+    <include file="insert-author-data.xml" relativeToChangelogFile="true"/>
+    <include file="insert-genre-data.xml" relativeToChangelogFile="true"/>
+    <include file="insert-book-data.xml" relativeToChangelogFile="true"/>
+    <include file="change-book-name-column.xml" relativeToChangelogFile="true"/>
+    <include file="create-available-book-schema.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="create-available-book-schemas" author="Vladislav Kabral">
+        <comment>Create available book schema</comment>
+        <createTable tableName="available_book">
+            <column name="id" type="int" autoIncrement="true" startWith="1">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="book_id" type="int">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="is_available" type="bool">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="date">
+                <constraints nullable="true"/>
+            </column>
+            <column name="end_date" type="date">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

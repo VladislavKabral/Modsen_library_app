@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="change-book-name-unique-property" author="Vladislav Kabral">
+        <comment>Change unique property in book name from true to false</comment>
+        <dropUniqueConstraint tableName="book"
+                              constraintName="book_name_key"
+                              uniqueColumns="name"/>
+    </changeSet>
+
+</databaseChangeLog>
