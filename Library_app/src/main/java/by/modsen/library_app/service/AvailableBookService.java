@@ -42,23 +42,31 @@ public class AvailableBookService {
                 + " not found"));
     }
 
+    public AvailableBook findByBookId(int bookId) throws EntityNotFoundException {
+        Optional<AvailableBook> availableBook = availableBookRepository.findByBook_Id(bookId);
+
+        return availableBook.orElseThrow(EntityNotFoundException.entityNotFoundException("Available book with book's id: "
+                + bookId + " not found"));
+    }
+
+    public AvailableBook findByBookISBN(String isbn) throws EntityNotFoundException {
+        Book book = bookService.findByISBN(isbn);
+
+        return findByBookId(book.getId());
+    }
+
     @Transactional
     public void save(AvailableBook availableBook) throws EntityNotFoundException {
-        Book book = bookService.findByName(availableBook.getBook().getName());
+        Book book = bookService.findByISBN(availableBook.getBook().getIsbn());
 
         availableBook.setBook(book);
+        availableBook.setAvailable(true);
 
         availableBookRepository.save(availableBook);
     }
 
     @Transactional
-    public void updateById(int id, AvailableBook availableBook) throws EntityNotFoundException {
-        AvailableBook availableBookFromDB = findById(id);
-
-        availableBookFromDB.setBook(availableBook.getBook());
-        availableBookFromDB.setStartDate(availableBook.getStartDate());
-        availableBookFromDB.setEndDate(availableBook.getEndDate());
-
+    public void update(AvailableBook availableBook) {
         availableBookRepository.save(availableBook);
     }
 

@@ -7,7 +7,6 @@ import by.modsen.library_app.service.LibraryService;
 import by.modsen.library_app.util.exception.EntityNotFoundException;
 import by.modsen.library_app.util.exception.EntityValidateException;
 import by.modsen.library_app.util.exception.InvalidParamException;
-import by.modsen.library_app.util.validation.DateValidator;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/library/api")
@@ -24,39 +25,36 @@ public class LibraryController {
 
     private final LibraryService libraryService;
 
-    private final DateValidator dateValidator;
-
-    private final SimpleDateFormat dateFormat;
-
     private final ModelMapper mapper;
 
     @Autowired
-    public LibraryController(LibraryService libraryService, DateValidator dateValidator, ModelMapper mapper) {
+    public LibraryController(LibraryService libraryService, ModelMapper mapper) {
         this.libraryService = libraryService;
-        this.dateValidator = dateValidator;
         this.mapper = mapper;
-        this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     }
 
-    @PostMapping(value = "/book", params = {"action"})
+    @GetMapping("/availableBooks")
+    public ResponseEntity<List<AvailableBookDTO>> getAvailableBooks() throws EntityNotFoundException {
+        return new ResponseEntity<>(libraryService.getAvailableBooks()
+                .stream()
+                .map(this::convertToAvailableBookDTO)
+                .collect(Collectors.toList()),
+                HttpStatus.OK);
+    }
+
+    @PatchMapping(value = "/book", params = {"action"})
     public ResponseEntity<HttpStatus> issueBook(@RequestBody @Valid AvailableBookDTO availableBookDTO,
                                                 @RequestParam("action") String action)
             throws EntityValidateException, EntityNotFoundException, InvalidParamException {
 
-        if (action.equals("issue")) {
-            handleDates(availableBookDTO.getStartDate().toString(), availableBookDTO.getEndDate().toString());
-
-            libraryService.issueBook(convertToAvailableBook(availableBookDTO));
-        } else {
-            throw new InvalidParamException(action + " is wrong param in request");
+        switch (action) {
+            case "issue" -> {
+                handleDate(availableBookDTO.getEndDate());
+                libraryService.issueBook(convertToAvailableBook(availableBookDTO));
+            }
+            case "return" -> libraryService.returnBook(convertToAvailableBook(availableBookDTO));
+            default -> throw new InvalidParamException("'" + action + "' is wrong param in request");
         }
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PostMapping(params = {"return"})
-    public ResponseEntity<HttpStatus> returnBook() {
-
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -67,13 +65,9 @@ public class LibraryController {
                 HttpStatus.BAD_REQUEST);
     }
 
-    private void handleDates(String startDate, String endDate) throws EntityValidateException {
-        if (!dateValidator.validate(startDate)) {
-            throw new EntityValidateException("Wrong start date format. Correct format is 'yyyy-MM-dd'");
-        }
-
-        if (!dateValidator.validate(endDate)) {
-            throw new EntityValidateException("Wrong end date format. Correct format is 'yyyy-MM-dd'");
+    private void handleDate(LocalDate endDate) throws EntityValidateException {
+        if (LocalDate.now().isAfter(endDate)) {
+            throw new EntityValidateException("End date must be after start date");
         }
     }
 

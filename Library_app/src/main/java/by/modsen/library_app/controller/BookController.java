@@ -59,8 +59,11 @@ public class BookController {
     }
 
     @GetMapping(value = "/book", params = {"name"})
-    public ResponseEntity<BookDTO> getBookByName(@RequestParam("name") String name) throws EntityNotFoundException {
-        return new ResponseEntity<>(convertToBookDTO(bookService.findByName(name)),
+    public ResponseEntity<List<BookDTO>> getBookByName(@RequestParam("name") String name) throws EntityNotFoundException {
+        return new ResponseEntity<>(bookService.findByName(name)
+                .stream()
+                .map(this::convertToBookDTO)
+                .collect(Collectors.toList()),
                 HttpStatus.OK);
     }
 

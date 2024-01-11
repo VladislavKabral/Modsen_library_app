@@ -51,10 +51,14 @@ public class BookService {
         return book.orElseThrow(EntityNotFoundException.entityNotFoundException("Book with ISBN: '" + isbn + "' not found"));
     }
 
-    public Book findByName(String name) throws EntityNotFoundException {
-        Optional<Book> book = bookRepository.findByName(name);
+    public List<Book> findByName(String name) throws EntityNotFoundException {
+        List<Book> books = bookRepository.findByName(name);
 
-        return book.orElseThrow(EntityNotFoundException.entityNotFoundException("Book with name: '" + name + "' not found"));
+        if (books.isEmpty()) {
+            throw new EntityNotFoundException("Books with name: '" + name + "' not found");
+        }
+
+        return books;
     }
 
     @Transactional
