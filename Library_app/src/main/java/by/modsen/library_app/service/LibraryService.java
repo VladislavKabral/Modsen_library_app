@@ -20,10 +20,6 @@ public class LibraryService {
     }
 
     public List<AvailableBook> getAvailableBooks() throws EntityNotFoundException {
-        System.out.println(availableBookService.findAll()
-                .stream()
-                .filter(AvailableBook::isAvailable)
-                .collect(Collectors.toList()));
         return availableBookService.findAll()
                 .stream()
                 .filter(AvailableBook::isAvailable)

@@ -1,7 +1,5 @@
 package by.modsen.library_app.dto;
 
-import by.modsen.library_app.model.Author;
-import by.modsen.library_app.model.Genre;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -25,7 +23,7 @@ public class BookDTO {
     private String name;
 
     @NotNull(message = "Book must have an author")
-    private Author author;
+    private AuthorDTO author;
 
     @NotEmpty(message = "Book's description must be not empty")
     @Size(min = 4, max = 255, message = "Book's description must be between 4 and 255 symbols")
@@ -33,5 +31,5 @@ public class BookDTO {
     private String description;
 
     @NotNull(message = "Book must have a genre")
-    private Genre genre;
+    private GenreDTO genre;
 }
