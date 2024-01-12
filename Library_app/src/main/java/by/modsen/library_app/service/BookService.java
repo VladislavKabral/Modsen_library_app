@@ -1,6 +1,7 @@
 package by.modsen.library_app.service;
 
 import by.modsen.library_app.model.Author;
+import by.modsen.library_app.model.AvailableBook;
 import by.modsen.library_app.model.Book;
 import by.modsen.library_app.model.Genre;
 import by.modsen.library_app.repository.BookRepository;
@@ -22,11 +23,13 @@ public class BookService {
 
     private final GenreService genreService;
 
+    private final AvailableBookService availableBookService;
     @Autowired
-    public BookService(BookRepository bookRepository, AuthorService authorService, GenreService genreService) {
+    public BookService(BookRepository bookRepository, AuthorService authorService, GenreService genreService, AvailableBookService availableBookService) {
         this.bookRepository = bookRepository;
         this.authorService = authorService;
         this.genreService = genreService;
+        this.availableBookService = availableBookService;
     }
 
     public List<Book> findAll() throws EntityNotFoundException {
@@ -83,6 +86,11 @@ public class BookService {
                 book.getDescription().substring(1));
 
         bookRepository.save(book);
+
+        AvailableBook availableBook = new AvailableBook();
+        availableBook.setBook(findByISBN(book.getIsbn()));
+
+        availableBookService.save(availableBook);
     }
 
     @Transactional
@@ -115,6 +123,7 @@ public class BookService {
     public void deleteById(int id) throws EntityNotFoundException {
         Book book = findById(id);
 
+        availableBookService.deleteById(availableBookService.findByBookId(id).getId());
         bookRepository.deleteById(book.getId());
     }
 }

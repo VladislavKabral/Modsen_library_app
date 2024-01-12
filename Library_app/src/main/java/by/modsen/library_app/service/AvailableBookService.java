@@ -1,7 +1,6 @@
 package by.modsen.library_app.service;
 
 import by.modsen.library_app.model.AvailableBook;
-import by.modsen.library_app.model.Book;
 import by.modsen.library_app.repository.AvailableBookRepository;
 import by.modsen.library_app.util.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +16,9 @@ public class AvailableBookService {
 
     private final AvailableBookRepository availableBookRepository;
 
-    private final BookService bookService;
-
     @Autowired
-    public AvailableBookService(AvailableBookRepository availableBookRepository, BookService bookService) {
+    public AvailableBookService(AvailableBookRepository availableBookRepository) {
         this.availableBookRepository = availableBookRepository;
-        this.bookService = bookService;
     }
 
     public List<AvailableBook> findAll() throws EntityNotFoundException {
@@ -49,18 +45,12 @@ public class AvailableBookService {
                 + bookId + " not found"));
     }
 
-    public AvailableBook findByBookISBN(String isbn) throws EntityNotFoundException {
-        Book book = bookService.findByISBN(isbn);
-
-        return findByBookId(book.getId());
-    }
-
     @Transactional
-    public void save(AvailableBook availableBook) throws EntityNotFoundException {
-        Book book = bookService.findByISBN(availableBook.getBook().getIsbn());
-
-        availableBook.setBook(book);
+    public void save(AvailableBook availableBook) {
+        availableBook.setBook(availableBook.getBook());
         availableBook.setAvailable(true);
+        availableBook.setStartDate(null);
+        availableBook.setEndDate(null);
 
         availableBookRepository.save(availableBook);
     }

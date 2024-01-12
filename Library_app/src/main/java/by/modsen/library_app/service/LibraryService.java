@@ -14,9 +14,12 @@ public class LibraryService {
 
     private final AvailableBookService availableBookService;
 
+    private final BookService bookService;
+
     @Autowired
-    public LibraryService(AvailableBookService availableBookService) {
+    public LibraryService(AvailableBookService availableBookService, BookService bookService) {
         this.availableBookService = availableBookService;
+        this.bookService = bookService;
     }
 
     public List<AvailableBook> getAvailableBooks() throws EntityNotFoundException {
@@ -27,7 +30,8 @@ public class LibraryService {
     }
 
     public void issueBook(AvailableBook availableBook) throws EntityNotFoundException {
-        AvailableBook availableBookFromDB = availableBookService.findByBookISBN(availableBook.getBook().getIsbn());
+        AvailableBook availableBookFromDB = availableBookService
+                .findByBookId(bookService.findByISBN(availableBook.getBook().getIsbn()).getId());
 
         availableBookFromDB.setAvailable(false);
         availableBookFromDB.setStartDate(LocalDate.now());
@@ -37,7 +41,8 @@ public class LibraryService {
     }
 
     public void returnBook(AvailableBook availableBook) throws EntityNotFoundException {
-        AvailableBook availableBookFromDB = availableBookService.findByBookISBN(availableBook.getBook().getIsbn());
+        AvailableBook availableBookFromDB = availableBookService
+                .findByBookId(bookService.findByISBN(availableBook.getBook().getIsbn()).getId());
 
         availableBookFromDB.setAvailable(true);
         availableBookFromDB.setStartDate(null);
