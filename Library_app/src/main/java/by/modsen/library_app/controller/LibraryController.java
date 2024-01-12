@@ -24,9 +24,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/library/api")
+@RequestMapping(Url.Library.PATH)
 @Tag(name = "LibraryController", description = "Allows to works with books: get available books, issue and return")
 public class LibraryController {
+
+    private static final String ACTION_PARAM_NAME = "action";
+
+    private static final String ISSUE_ACTION_NAME = "issue";
+
+    private static final String RETURN_ACTION_NAME = "return";
+
+    private static final String SECURITY_REQUIREMENT_NAME = "JWT";
 
     private final LibraryService libraryService;
 
@@ -38,12 +46,12 @@ public class LibraryController {
         this.mapper = mapper;
     }
 
-    @GetMapping("/availableBooks")
+    @GetMapping(Url.Library.AVAILABLE_BOOKS)
     @Operation(
             summary = "Getting all available books",
             description = "Allows to get all available books in the library"
     )
-    @SecurityRequirement(name = "JWT")
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
     public ResponseEntity<List<AvailableBookDTO>> getAvailableBooks() throws EntityNotFoundException {
         return new ResponseEntity<>(libraryService.getAvailableBooks()
                 .stream()
@@ -52,24 +60,25 @@ public class LibraryController {
                 HttpStatus.OK);
     }
 
-    @PatchMapping(value = "/book", params = {"action"})
+    @PatchMapping(value = Url.BOOK, params = {ACTION_PARAM_NAME})
     @Operation(
             summary = "Handling books",
             description = "Allows to handle a book: issue or return by book's ISBN"
     )
-    @SecurityRequirement(name = "JWT")
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
     public ResponseEntity<HttpStatus> handleBook(@RequestBody @Valid @Parameter(description = "Data of handling book",
                                                          required = true) AvailableBookDTO availableBookDTO,
-                                                 @RequestParam("action") @Parameter(description = "Type of handle action",
+                                                 @RequestParam(ACTION_PARAM_NAME)
+                                                 @Parameter(description = "Type of handle action",
                                                          required = true) String action)
             throws EntityValidateException, EntityNotFoundException, InvalidParamException {
 
         switch (action) {
-            case "issue" -> {
+            case ISSUE_ACTION_NAME -> {
                 handleDate(availableBookDTO.getEndDate());
                 libraryService.issueBook(convertToAvailableBook(availableBookDTO));
             }
-            case "return" -> libraryService.returnBook(convertToAvailableBook(availableBookDTO));
+            case RETURN_ACTION_NAME -> libraryService.returnBook(convertToAvailableBook(availableBookDTO));
             default -> throw new InvalidParamException("'" + action + "' is wrong param in request");
         }
 

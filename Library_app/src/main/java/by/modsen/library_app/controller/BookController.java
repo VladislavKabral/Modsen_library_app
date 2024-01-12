@@ -25,9 +25,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/library/api/books")
+@RequestMapping(Url.Book.PATH)
 @Tag(name = "BookController", description = "Allows to works with books: get, create, update, delete")
 public class BookController {
+
+    private static final String ID_PARAM_NAME = "id";
+
+    private static final String ISBN_PARAM_NAME = "isbn";
+
+    private static final String NAME_PARAM_NAME = "name";
+
+    private static final String SECURITY_REQUIREMENT_NAME = "JWT";
 
     private final BookService bookService;
 
@@ -47,7 +55,7 @@ public class BookController {
             summary = "Getting all books in the library",
             description = "Allows to get all books, which the library has"
     )
-    @SecurityRequirement(name = "JWT")
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
     public ResponseEntity<List<BookDTO>> getBooks() throws EntityNotFoundException {
         return new ResponseEntity<>(bookService.findAll()
                 .stream()
@@ -56,37 +64,37 @@ public class BookController {
                 HttpStatus.OK);
     }
 
-    @GetMapping(value = "/book", params = {"id"})
+    @GetMapping(value = Url.BOOK, params = {ID_PARAM_NAME})
     @Operation(
             summary = "Getting book by id",
             description = "Allows to get book by book's id"
     )
-    @SecurityRequirement(name = "JWT")
-    public ResponseEntity<BookDTO> getBookById(@RequestParam("id") @Parameter(description = "Book's id", required = true)
-                                                   int id) throws EntityNotFoundException {
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
+    public ResponseEntity<BookDTO> getBookById(@RequestParam(ID_PARAM_NAME) @Parameter(description = "Book's id",
+            required = true) int id) throws EntityNotFoundException {
         return new ResponseEntity<>(convertToBookDTO(bookService.findById(id)),
                 HttpStatus.OK);
     }
 
-    @GetMapping(value = "/book", params = {"isbn"})
+    @GetMapping(value = Url.BOOK, params = {ISBN_PARAM_NAME})
     @Operation(
             summary = "Getting book by ISBN",
             description = "Allows to get book by book's ISBN"
     )
-    @SecurityRequirement(name = "JWT")
-    public ResponseEntity<BookDTO> getBookByISBN(@RequestParam("isbn") @Parameter(description = "Book's ISBN",
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
+    public ResponseEntity<BookDTO> getBookByISBN(@RequestParam(ISBN_PARAM_NAME) @Parameter(description = "Book's ISBN",
             required = true) String isbn) throws EntityNotFoundException {
         return new ResponseEntity<>(convertToBookDTO(bookService.findByISBN(isbn)),
                 HttpStatus.OK);
     }
 
-    @GetMapping(value = "/book", params = {"name"})
+    @GetMapping(value = Url.BOOK, params = {NAME_PARAM_NAME})
     @Operation(
             summary = "Getting book by name",
             description = "Allows to get book by book's name"
     )
-    @SecurityRequirement(name = "JWT")
-    public ResponseEntity<List<BookDTO>> getBookByName(@RequestParam("name") @Parameter(description = "Book's name",
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
+    public ResponseEntity<List<BookDTO>> getBookByName(@RequestParam(NAME_PARAM_NAME) @Parameter(description = "Book's name",
             required = true) String name) throws EntityNotFoundException {
         return new ResponseEntity<>(bookService.findByName(name)
                 .stream()
@@ -100,7 +108,7 @@ public class BookController {
             summary = "Saving book in the library",
             description = "Allows to save new book in the library storage"
     )
-    @SecurityRequirement(name = "JWT")
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
     public ResponseEntity<HttpStatus> saveBook(@RequestBody @Valid @Parameter(description = "New book's data for saving",
                                                     required = true) BookDTO bookDTO,
                                                @Parameter(description = "Validation's errors") BindingResult bindingResult)
@@ -117,12 +125,12 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping(Url.Book.ID)
     @Operation(
             summary = "Updating book in the library",
             description = "Allows to update book's data in the library by book's id"
     )
-    @SecurityRequirement(name = "JWT")
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
     public ResponseEntity<HttpStatus> updateBook(@PathVariable("id") @Parameter(description = "Book's id", required = true)
                                                      int id,
                                                  @RequestBody @Valid @Parameter(description = "Book's data for updating",
@@ -143,12 +151,12 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(Url.Book.ID)
     @Operation(
             summary = "Deleting book from the library",
             description = "Allows to delete book from the library by book's id"
     )
-    @SecurityRequirement(name = "JWT")
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
     public ResponseEntity<HttpStatus> deleteBook(@PathVariable("id") @Parameter(description = "Book's id", required = true)
                                                      int id)
             throws EntityNotFoundException {
