@@ -7,6 +7,10 @@ import by.modsen.library_app.service.LibraryService;
 import by.modsen.library_app.util.exception.EntityNotFoundException;
 import by.modsen.library_app.util.exception.EntityValidateException;
 import by.modsen.library_app.util.exception.InvalidParamException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/library/api")
+@Tag(name = "LibraryController", description = "Allows to works with books: get available books, issue and return")
 public class LibraryController {
 
     private final LibraryService libraryService;
@@ -34,6 +39,11 @@ public class LibraryController {
     }
 
     @GetMapping("/availableBooks")
+    @Operation(
+            summary = "Getting all available books",
+            description = "Allows to get all available books in the library"
+    )
+    @SecurityRequirement(name = "JWT")
     public ResponseEntity<List<AvailableBookDTO>> getAvailableBooks() throws EntityNotFoundException {
         return new ResponseEntity<>(libraryService.getAvailableBooks()
                 .stream()
@@ -43,8 +53,15 @@ public class LibraryController {
     }
 
     @PatchMapping(value = "/book", params = {"action"})
-    public ResponseEntity<HttpStatus> issueBook(@RequestBody @Valid AvailableBookDTO availableBookDTO,
-                                                @RequestParam("action") String action)
+    @Operation(
+            summary = "Handling books",
+            description = "Allows to handle a book: issue or return by book's ISBN"
+    )
+    @SecurityRequirement(name = "JWT")
+    public ResponseEntity<HttpStatus> handleBook(@RequestBody @Valid @Parameter(description = "Data of handling book",
+                                                         required = true) AvailableBookDTO availableBookDTO,
+                                                 @RequestParam("action") @Parameter(description = "Type of handle action",
+                                                         required = true) String action)
             throws EntityValidateException, EntityNotFoundException, InvalidParamException {
 
         switch (action) {
