@@ -1,6 +1,6 @@
 package by.modsen.library_app.controller;
 
-interface Url {
+public interface Url {
 
     String BOOK = "/book";
 
@@ -14,5 +14,13 @@ interface Url {
         String PATH = "/library/api";
 
         String AVAILABLE_BOOKS = "/availableBooks";
+    }
+
+    interface Auth {
+        String PATH = "/library/api/auth";
+
+        String REGISTER = "/register";
+
+        String LOGIN = "/login";
     }
 }

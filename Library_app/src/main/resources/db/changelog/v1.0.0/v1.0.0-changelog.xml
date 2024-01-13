@@ -14,5 +14,6 @@
     <include file="insert-book-data.xml" relativeToChangelogFile="true"/>
     <include file="change-book-name-column.xml" relativeToChangelogFile="true"/>
     <include file="create-available-book-schema.xml" relativeToChangelogFile="true"/>
+    <include file="create-user-schema.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
