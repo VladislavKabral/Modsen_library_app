@@ -46,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping(Url.Auth.REGISTER)
-    public UserDTO registerHandler(@RequestBody @Valid LoginCredentials loginCredentials, BindingResult bindingResult)
+    public ResponseEntity<UserDTO> registerHandler(@RequestBody @Valid LoginCredentials loginCredentials, BindingResult bindingResult)
             throws EntityValidateException {
 
         User user = new User(loginCredentials.getEmail(), loginCredentials.getPassword());
@@ -55,11 +55,11 @@ public class AuthController {
         userService.save(user);
 
         String token = jwtUtil.generateToken(loginCredentials.getEmail());
-        return new UserDTO(token);
+        return new ResponseEntity<>(new UserDTO(token), HttpStatus.OK);
     }
 
     @PostMapping(Url.Auth.LOGIN)
-    public UserDTO loginHandler(@RequestBody @Valid LoginCredentials body, BindingResult bindingResult)
+    public ResponseEntity<UserDTO> loginHandler(@RequestBody @Valid LoginCredentials body, BindingResult bindingResult)
             throws InvalidParamException, EntityValidateException {
 
         handleBindingResult(bindingResult);
@@ -76,7 +76,7 @@ public class AuthController {
 
         String token = jwtUtil.generateToken(body.getEmail());
 
-        return new UserDTO(token);
+        return new ResponseEntity<>(new UserDTO(token), HttpStatus.OK);
     }
 
     private void handleBindingResult(BindingResult bindingResult) throws EntityValidateException {

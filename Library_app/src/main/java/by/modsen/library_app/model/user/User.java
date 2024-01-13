@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class User {
 
     @Column(name = "password")
     @NotEmpty(message = "Password must be not empty")
-    @Size(min = 8, max = 50, message = "Password must be between 8 and 50 symbols")
+    @Size(min = 8, max = 100, message = "Password must be between 8 and 100 symbols")
     @NonNull
     private String password;
 }

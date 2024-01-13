@@ -2,7 +2,7 @@ package by.modsen.library_app.config.securiry;
 
 import by.modsen.library_app.security.JWTFilter;
 import by.modsen.library_app.service.user.LibraryUsersDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,23 +20,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private static final String DEFAULT_USER_ROLE_NAME = "User";
 
     private final JWTFilter jwtFilter;
 
     private final LibraryUsersDetailsService libraryUsersDetailsService;
 
-    @Autowired
-    public SecurityConfig(JWTFilter jwtFilter, LibraryUsersDetailsService libraryUsersDetailsService) {
-        this.jwtFilter = jwtFilter;
-        this.libraryUsersDetailsService = libraryUsersDetailsService;
-    }
-
     @Bean
-    protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("")
-                        .permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(request -> request.requestMatchers("/library/api/auth/**")
+                        .permitAll()
+                        .requestMatchers("/library/api/**").hasAnyAuthority(DEFAULT_USER_ROLE_NAME))
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
                         jwtFilter, UsernamePasswordAuthenticationFilter.class);
