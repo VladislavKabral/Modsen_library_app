@@ -111,8 +111,7 @@ public class BookController {
     )
     @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
     public ResponseEntity<HttpStatus> saveBook(@RequestBody @Valid @Parameter(description = "New book's data for saving",
-                                                    required = true) BookDTO bookDTO,
-                                               @Parameter(description = "Validation's errors") BindingResult bindingResult)
+                                                    required = true) BookDTO bookDTO, BindingResult bindingResult)
             throws EntityValidateException, EntityNotFoundException {
 
         Book book = convertToBook(bookDTO);
@@ -136,7 +135,6 @@ public class BookController {
                                                      int id,
                                                  @RequestBody @Valid @Parameter(description = "Book's data for updating",
                                                      required = true) BookDTO bookDTO,
-                                                 @Parameter(description = "Validation's errors")
                                                      BindingResult bindingResult)
             throws EntityValidateException, EntityNotFoundException {
 

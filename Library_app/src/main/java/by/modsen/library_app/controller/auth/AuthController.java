@@ -10,6 +10,10 @@ import by.modsen.library_app.service.user.UserService;
 import by.modsen.library_app.util.exception.EntityValidateException;
 import by.modsen.library_app.util.exception.InvalidParamException;
 import by.modsen.library_app.util.validation.user.UserValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +29,10 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping(Url.Auth.PATH)
+@Tag(name = "AuthController", description = "Allows to login and register in the service")
 public class AuthController {
+
+    private static final String SECURITY_REQUIREMENT_NAME = "JWT";
 
     private final UserService userService;
 
@@ -46,7 +53,13 @@ public class AuthController {
     }
 
     @PostMapping(Url.Auth.REGISTER)
-    public ResponseEntity<UserDTO> registerHandler(@RequestBody @Valid LoginCredentials loginCredentials, BindingResult bindingResult)
+    @Operation(
+            summary = "Registration in the service",
+            description = "Allows to register in the service by email and password"
+    )
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
+    public ResponseEntity<UserDTO> registerHandler(@RequestBody @Valid @Parameter(description = "Register credentials",
+            required = true) LoginCredentials loginCredentials, BindingResult bindingResult)
             throws EntityValidateException {
 
         User user = new User(loginCredentials.getEmail(), loginCredentials.getPassword());
@@ -59,7 +72,13 @@ public class AuthController {
     }
 
     @PostMapping(Url.Auth.LOGIN)
-    public ResponseEntity<UserDTO> loginHandler(@RequestBody @Valid LoginCredentials body, BindingResult bindingResult)
+    @Operation(
+            summary = "Log in to the service",
+            description = "Allows to log in to the service by email and password"
+    )
+    @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
+    public ResponseEntity<UserDTO> loginHandler(@RequestBody @Valid @Parameter(description = "Login credentials",
+            required = true) LoginCredentials body, BindingResult bindingResult)
             throws InvalidParamException, EntityValidateException {
 
         handleBindingResult(bindingResult);
