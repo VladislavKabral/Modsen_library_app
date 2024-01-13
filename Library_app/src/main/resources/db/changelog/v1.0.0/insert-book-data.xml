@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="book-schema-init" author="Vladislav Kabral">
+        <comment>Insert book records</comment>
+        <insert tableName="book">
+            <column name="isbn" value="978-5-699-12014-7"/>
+            <column name="name" value="Pride and prejudice"/>
+            <column name="genre" value="1"/>
+            <column name="description" value="The novel follows the character development of Elizabeth Bennet, who learns about the repercussions of hasty judgments and comes to appreciate the difference between superficial goodness and actual goodness"/>
+            <column name="author" value="2"/>
+        </insert>
+        <insert tableName="book">
+            <column name="isbn" value="978-5-699-12014-8"/>
+            <column name="name" value="Wuthering heights"/>
+            <column name="genre" value="1"/>
+            <column name="description" value="A gothic novel that follows the antihero, Heathcliff, as he gets revenge the people who kept him away from his love, Cathy Earnshaw"/>
+            <column name="author" value="1"/>
+        </insert>
+        <insert tableName="book">
+            <column name="isbn" value="978-5-699-12014-9"/>
+            <column name="name" value="The picture of Dorian Gray"/>
+            <column name="genre" value="3"/>
+            <column name="description" value="Dorian Gray sinks into a life of crime and gross sensuality, his body retains perfect youth and vigor while his recently painted portrait grows day by day into a hideous record of evil"/>
+            <column name="author" value="3"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

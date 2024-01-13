@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="genre-schema-init" author="Vladislav Kabral">
+        <comment>Insert genre records</comment>
+        <insert tableName="genre">
+            <column name="name" value="Romance"/>
+            <column name="description" value="The actions and feelings of people who are in love, especially behavior that is very caring or affectionate"/>
+        </insert>
+        <insert tableName="genre">
+            <column name="name" value="Detective"/>
+            <column name="description" value="A subgenre of crime fiction and mystery fiction in which an investigator or a detective investigates a crime, often murder"/>
+        </insert>
+        <insert tableName="genre">
+            <column name="name" value="Drama"/>
+            <column name="description" value="Story with high stakes and many conflicts"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

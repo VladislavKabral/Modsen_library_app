@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="author-schema-init" author="Vladislav Kabral">
+        <comment>Insert author records</comment>
+        <insert tableName="author">
+            <column name="lastname" value="Bronte"/>
+            <column name="firstname" value="Emily"/>
+        </insert>
+        <insert tableName="author">
+            <column name="lastname" value="Austen"/>
+            <column name="firstname" value="Jane"/>
+        </insert>
+        <insert tableName="author">
+            <column name="lastname" value="Wilde"/>
+            <column name="firstname" value="Oskar"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
