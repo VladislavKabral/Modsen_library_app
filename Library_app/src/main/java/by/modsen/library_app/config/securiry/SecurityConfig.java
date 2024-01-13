@@ -25,6 +25,10 @@ public class SecurityConfig {
 
     private static final String DEFAULT_USER_ROLE_NAME = "User";
 
+    private static final String EVERYONE_ACCESSIBLE_PATH = "/library/api/auth/**";
+
+    private static final String AUTHORIZED_USER_ACCESSIBLE_PATH = "/library/api/**";
+
     private final JWTFilter jwtFilter;
 
     private final LibraryUsersDetailsService libraryUsersDetailsService;
@@ -32,9 +36,9 @@ public class SecurityConfig {
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/library/api/auth/**")
+                .authorizeHttpRequests(request -> request.requestMatchers(EVERYONE_ACCESSIBLE_PATH)
                         .permitAll()
-                        .requestMatchers("/library/api/**").hasAnyAuthority(DEFAULT_USER_ROLE_NAME))
+                        .requestMatchers(AUTHORIZED_USER_ACCESSIBLE_PATH).hasAnyAuthority(DEFAULT_USER_ROLE_NAME))
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
                         jwtFilter, UsernamePasswordAuthenticationFilter.class);
