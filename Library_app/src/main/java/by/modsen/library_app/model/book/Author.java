@@ -38,4 +38,9 @@ public class Author {
     @OneToMany(mappedBy = "author")
     @JsonManagedReference(value = "author_books")
     private List<Book> books;
+
+    @Override
+    public String toString() {
+        return lastname + " " + firstname;
+    }
 }

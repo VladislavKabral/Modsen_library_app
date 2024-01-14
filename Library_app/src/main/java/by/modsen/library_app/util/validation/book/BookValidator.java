@@ -3,6 +3,8 @@ package by.modsen.library_app.util.validation.book;
 import by.modsen.library_app.model.book.Book;
 import by.modsen.library_app.service.book.BookService;
 import by.modsen.library_app.util.exception.EntityNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -12,6 +14,8 @@ import org.springframework.validation.Validator;
 public class BookValidator implements Validator {
 
     private final BookService bookService;
+
+    private static final Logger LOGGER = LogManager.getLogger(BookValidator.class);
 
     @Autowired
     public BookValidator(BookService bookService) {
@@ -34,7 +38,7 @@ public class BookValidator implements Validator {
                         "' already exists");
             }
         } catch (EntityNotFoundException e) {
-            //TODO: add log here
+            LOGGER.info("Book with ISBN '" + book.getIsbn() + "' not found");
         }
     }
 }

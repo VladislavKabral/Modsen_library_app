@@ -3,6 +3,8 @@ package by.modsen.library_app.service.user;
 import by.modsen.library_app.model.user.User;
 import by.modsen.library_app.repository.user.UserRepository;
 import by.modsen.library_app.util.exception.EntityNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
+
+    private static final Logger LOGGER = LogManager.getLogger(UserService.class);
 
     @Autowired
     public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
@@ -35,5 +39,6 @@ public class UserService {
     public void save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
+        LOGGER.info("New user with email '" + user.getEmail() + "' has been saved");
     }
 }
