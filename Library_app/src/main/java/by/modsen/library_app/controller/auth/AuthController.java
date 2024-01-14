@@ -2,6 +2,7 @@ package by.modsen.library_app.controller.auth;
 
 import by.modsen.library_app.controller.Url;
 import by.modsen.library_app.dto.ErrorResponseDTO;
+import by.modsen.library_app.dto.user.LoginCredentialsDTO;
 import by.modsen.library_app.dto.user.UserDTO;
 import by.modsen.library_app.model.user.LoginCredentials;
 import by.modsen.library_app.model.user.User;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,14 +44,19 @@ public class AuthController {
 
     private final UserValidator userValidator;
 
+    private final ModelMapper mapper;
+
     @Autowired
     public AuthController(UserService userService,
                           JWTUtil jwtUtil,
-                          AuthenticationManager authManager, UserValidator userValidator) {
+                          AuthenticationManager authManager,
+                          UserValidator userValidator,
+                          ModelMapper mapper) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.authManager = authManager;
         this.userValidator = userValidator;
+        this.mapper = mapper;
     }
 
     @PostMapping(Url.Auth.REGISTER)
@@ -59,8 +66,10 @@ public class AuthController {
     )
     @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
     public ResponseEntity<UserDTO> registerHandler(@RequestBody @Valid @Parameter(description = "Register credentials",
-            required = true) LoginCredentials loginCredentials, BindingResult bindingResult)
+            required = true) LoginCredentialsDTO loginCredentialsDTO, BindingResult bindingResult)
             throws EntityValidateException {
+
+        LoginCredentials loginCredentials = convertToLoginCredentials(loginCredentialsDTO);
 
         User user = new User(loginCredentials.getEmail(), loginCredentials.getPassword());
         userValidator.validate(user, bindingResult);
@@ -78,14 +87,16 @@ public class AuthController {
     )
     @SecurityRequirement(name = SECURITY_REQUIREMENT_NAME)
     public ResponseEntity<UserDTO> loginHandler(@RequestBody @Valid @Parameter(description = "Login credentials",
-            required = true) LoginCredentials body, BindingResult bindingResult)
+            required = true) LoginCredentialsDTO loginCredentialsDTO, BindingResult bindingResult)
             throws InvalidParamException, EntityValidateException {
 
         handleBindingResult(bindingResult);
 
+        LoginCredentials loginCredentials = convertToLoginCredentials(loginCredentialsDTO);
+
         try {
             UsernamePasswordAuthenticationToken authInputToken =
-                    new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword());
+                    new UsernamePasswordAuthenticationToken(loginCredentials.getEmail(), loginCredentials.getPassword());
 
             authManager.authenticate(authInputToken);
 
@@ -93,7 +104,7 @@ public class AuthController {
             throw new InvalidParamException("Invalid credentials.");
         }
 
-        String token = jwtUtil.generateToken(body.getEmail());
+        String token = jwtUtil.generateToken(loginCredentials.getEmail());
 
         return new ResponseEntity<>(new UserDTO(token), HttpStatus.OK);
     }
@@ -114,5 +125,9 @@ public class AuthController {
     public ResponseEntity<ErrorResponseDTO> handleException(Exception e) {
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage(), LocalDateTime.now()),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    private LoginCredentials convertToLoginCredentials(LoginCredentialsDTO loginCredentialsDTO) {
+        return mapper.map(loginCredentialsDTO, LoginCredentials.class);
     }
 }
