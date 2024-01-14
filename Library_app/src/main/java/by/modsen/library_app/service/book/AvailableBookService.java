@@ -72,6 +72,6 @@ public class AvailableBookService {
         AvailableBook availableBook = findById(id);
 
         availableBookRepository.deleteById(availableBook.getId());
-        LOGGER.info("Book with id '" + id + "' has been deleted from available book's list");
+        LOGGER.info("Book with id '" + availableBook.getBook().getId() + "' has been deleted from available book's list");
     }
 }
