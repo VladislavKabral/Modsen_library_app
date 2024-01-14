@@ -29,6 +29,18 @@ public class SecurityConfig {
 
     private static final String AUTHORIZED_USER_ACCESSIBLE_PATH = "/library/api/**";
 
+    private static final String[] AUTH_WHITELIST = {
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
+    };
+
     private final JWTFilter jwtFilter;
 
     private final LibraryUsersDetailsService libraryUsersDetailsService;
@@ -42,6 +54,12 @@ public class SecurityConfig {
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
                         jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request -> request.requestMatchers(AUTH_WHITELIST)
+                .permitAll()
+                .anyRequest()
+                .authenticated());
 
         return http.build();
     }
