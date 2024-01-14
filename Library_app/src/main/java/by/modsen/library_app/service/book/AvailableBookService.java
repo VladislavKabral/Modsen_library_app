@@ -3,6 +3,8 @@ package by.modsen.library_app.service.book;
 import by.modsen.library_app.model.book.AvailableBook;
 import by.modsen.library_app.repository.book.AvailableBookRepository;
 import by.modsen.library_app.util.exception.EntityNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ public class AvailableBookService {
 
     private final AvailableBookRepository availableBookRepository;
 
+    private static final Logger LOGGER = LogManager.getLogger(AvailableBookService.class);
     @Autowired
     public AvailableBookService(AvailableBookRepository availableBookRepository) {
         this.availableBookRepository = availableBookRepository;
@@ -53,11 +56,15 @@ public class AvailableBookService {
         availableBook.setEndDate(null);
 
         availableBookRepository.save(availableBook);
+        LOGGER.info("New book with ISBN '" + availableBook.getBook().getIsbn() + "' has been saved as available book");
     }
 
     @Transactional
     public void update(AvailableBook availableBook) {
         availableBookRepository.save(availableBook);
+        String bookStatus = availableBook.isAvailable() ? "Available" : "Not available";
+        LOGGER.info("Book's status with ISBN '" + availableBook.getBook().getIsbn() + "' has been updated with status '" +
+                bookStatus + "'");
     }
 
     @Transactional
@@ -65,5 +72,6 @@ public class AvailableBookService {
         AvailableBook availableBook = findById(id);
 
         availableBookRepository.deleteById(availableBook.getId());
+        LOGGER.info("Book with id '" + id + "' has been deleted from available book's list");
     }
 }

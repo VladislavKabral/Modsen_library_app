@@ -6,6 +6,8 @@ import by.modsen.library_app.model.book.Book;
 import by.modsen.library_app.model.book.Genre;
 import by.modsen.library_app.repository.book.BookRepository;
 import by.modsen.library_app.util.exception.EntityNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,9 @@ public class BookService {
     private final GenreService genreService;
 
     private final AvailableBookService availableBookService;
+
+    private static final Logger LOGGER = LogManager.getLogger(BookService.class);
+
     @Autowired
     public BookService(BookRepository bookRepository, AuthorService authorService, GenreService genreService, AvailableBookService availableBookService) {
         this.bookRepository = bookRepository;
@@ -71,10 +76,12 @@ public class BookService {
             author = authorService.findByLastnameAndFirstname(book.getAuthor().getLastname(),
                     book.getAuthor().getFirstname());
         } catch (EntityNotFoundException e) {
+            LOGGER.info("Cannot find author '" + book.getAuthor().toString() + "'");
             author = new Author();
             author.setFirstname(book.getAuthor().getFirstname());
             author.setLastname(book.getAuthor().getLastname());
             authorService.save(author);
+            LOGGER.info("Author '" + author + "' has been saved");
         }
 
         Genre genre = genreService.findByName(book.getGenre().getName());
@@ -86,11 +93,13 @@ public class BookService {
                 book.getDescription().substring(1));
 
         bookRepository.save(book);
+        LOGGER.info("Book with ISBN '" + book.getIsbn() + "' has been saved");
 
         AvailableBook availableBook = new AvailableBook();
         availableBook.setBook(findByISBN(book.getIsbn()));
 
         availableBookService.save(availableBook);
+        LOGGER.info("Book with ISBN '" + availableBook.getBook().getIsbn() + "' has been added to available book's list");
     }
 
     @Transactional
@@ -117,6 +126,7 @@ public class BookService {
         bookFromDB.setGenre(genre);
 
         bookRepository.save(bookFromDB);
+        LOGGER.info("Book with ISBN '" + bookFromDB.getIsbn() + "' has been updated");
     }
 
     @Transactional
@@ -125,5 +135,6 @@ public class BookService {
 
         availableBookService.deleteById(availableBookService.findByBookId(id).getId());
         bookRepository.deleteById(book.getId());
+        LOGGER.info("Book with id '" + id + "' has been deleted from the library");
     }
 }
